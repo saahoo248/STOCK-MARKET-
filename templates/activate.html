@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+License Activation
+</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body class="activation-page">
+
+<div class="activation-card">
+
+    <div class="logo big">
+        SM
+    </div>
+
+    <h1>
+        Stock Market Analysis
+    </h1>
+
+    <p>
+        AI & Machine Learning Dashboard
+    </p>
+
+    <form method="POST">
+
+        <label>
+            License Key
+        </label>
+
+        <textarea
+            name="license_key"
+            placeholder="Paste your existing license key"
+            required
+        ></textarea>
+
+        <button type="submit">
+            Activate License
+        </button>
+
+    </form>
+
+    {% if message %}
+
+    <div class="error-box">
+        {{ message }}
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>

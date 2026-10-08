@@ -1,0 +1,3 @@
+Stock Market Analysis - Model Evaluation
+MAE: 59.61202161531897
+RMSE: 127.68654883060488

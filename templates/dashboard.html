@@ -1,0 +1,545 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+Stock Market Analysis | AI & ML
+</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="brand">
+
+        <div class="logo">
+            SM
+        </div>
+
+        <div>
+            <h1>
+                Stock Market Analysis
+            </h1>
+
+            <p>
+                Using Python • AI & Machine Learning
+            </p>
+        </div>
+
+    </div>
+
+    <div class="license-status">
+        <span class="dot"></span>
+        LICENSE ACTIVE
+    </div>
+
+</header>
+
+
+<main>
+
+
+{% if error %}
+
+<div class="error-box">
+    {{ error }}
+</div>
+
+{% endif %}
+
+
+{% if companies %}
+
+
+<section class="control-card">
+
+    <div class="section-title">
+        <h2>
+            Market Analysis Controls
+        </h2>
+
+        <span>
+            Select company and analysis period
+        </span>
+    </div>
+
+
+    <form method="GET"
+          action="/"
+          class="filters">
+
+
+        <div class="field">
+
+            <label>
+                Company
+            </label>
+
+            <select name="company">
+
+                <option value="ALL"
+                    {% if selected_company == "ALL" %}
+                    selected
+                    {% endif %}
+                >
+                    All Companies
+                </option>
+
+                {% for company in companies %}
+
+                <option value="{{ company }}"
+                    {% if selected_company == company %}
+                    selected
+                    {% endif %}
+                >
+                    {{ company }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                From Date
+            </label>
+
+            <input
+                type="date"
+                name="start_date"
+                value="{{ start_date }}"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                To Date
+            </label>
+
+            <input
+                type="date"
+                name="end_date"
+                value="{{ end_date }}"
+            >
+
+        </div>
+
+
+        <button type="submit">
+
+            Analyse Market
+
+        </button>
+
+
+        <a
+            class="reset"
+            href="/"
+        >
+            Reset
+        </a>
+
+    </form>
+
+</section>
+
+
+{% if result and not result.error %}
+
+
+<section class="selected-market">
+
+    <div>
+
+        <small>
+            SELECTED COMPANY
+        </small>
+
+        <h2>
+            {{ result.company }}
+        </h2>
+
+    </div>
+
+    <div class="period">
+
+        {{ result.start }}
+        →
+        {{ result.end }}
+
+    </div>
+
+</section>
+
+
+<section class="metrics-grid">
+
+
+    <div class="metric">
+
+        <span>
+            Latest Close
+        </span>
+
+        <strong>
+            {{ "%.2f"|format(result.latest_close) }}
+        </strong>
+
+    </div>
+
+
+    <div class="metric">
+
+        <span>
+            Highest Close
+        </span>
+
+        <strong>
+            {{ "%.2f"|format(result.highest_close) }}
+        </strong>
+
+    </div>
+
+
+    <div class="metric">
+
+        <span>
+            Lowest Close
+        </span>
+
+        <strong>
+            {{ "%.2f"|format(result.lowest_close) }}
+        </strong>
+
+    </div>
+
+
+    <div class="metric">
+
+        <span>
+            Records
+        </span>
+
+        <strong>
+            {{ result.rows }}
+        </strong>
+
+    </div>
+
+
+    <div class="metric">
+
+        <span>
+            MA20
+        </span>
+
+        <strong>
+            {% if result.ma20 is not none %}
+                {{ "%.2f"|format(result.ma20) }}
+            {% else %}
+                N/A
+            {% endif %}
+        </strong>
+
+    </div>
+
+
+    <div class="metric">
+
+        <span>
+            MA50
+        </span>
+
+        <strong>
+            {% if result.ma50 is not none %}
+                {{ "%.2f"|format(result.ma50) }}
+            {% else %}
+                N/A
+            {% endif %}
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+<section class="content-grid">
+
+
+    <div class="chart-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Price Trend Analysis
+                </h2>
+
+                <p>
+                    Closing price with 20-day and 50-day moving averages
+                </p>
+
+            </div>
+
+        </div>
+
+        <img
+            class="chart"
+            src="/chart/{{ result.chart }}"
+            alt="Stock Market Chart"
+        >
+
+    </div>
+
+
+    <div class="side-column">
+
+
+        <div class="info-card">
+
+            <h3>
+                Regression Evaluation
+            </h3>
+
+            <div class="evaluation-row">
+
+                <span>
+                    MAE
+                </span>
+
+                <strong>
+                    {% if result.mae is not none %}
+                        {{ "%.4f"|format(result.mae) }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </strong>
+
+            </div>
+
+            <div class="evaluation-row">
+
+                <span>
+                    RMSE
+                </span>
+
+                <strong>
+                    {% if result.rmse is not none %}
+                        {{ "%.4f"|format(result.rmse) }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <h3>
+                Market Summary
+            </h3>
+
+            <p>
+                Average Close:
+                <b>
+                    {{ "%.2f"|format(result.avg_close) }}
+                </b>
+            </p>
+
+            <p>
+                Average Volume:
+                <b>
+                    {{ "{:,.0f}".format(result.avg_volume) }}
+                </b>
+            </p>
+
+            <p>
+                Data Records:
+                <b>
+                    {{ result.rows }}
+                </b>
+            </p>
+
+        </div>
+
+
+        <div class="info-card note">
+
+            <h3>
+                Project Note
+            </h3>
+
+            <p>
+                Linear Regression is used as an educational baseline
+                for demonstrating the machine-learning workflow.
+                It is not financial advice or a guaranteed forecasting system.
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+{% if result.predictions %}
+
+<section class="table-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Latest Model Predictions
+            </h2>
+
+            <p>
+                Recent test observations
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Date
+                </th>
+
+                <th>
+                    Actual Close
+                </th>
+
+                <th>
+                    Predicted Close
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        {% for row in result.predictions %}
+
+            <tr>
+
+                <td>
+                    {{ row["Date"] }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(row["Actual Close"]) }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(row["Predicted Close"]) }}
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endif %}
+
+
+{% elif result and result.error %}
+
+<div class="error-box">
+    {{ result.error }}
+</div>
+
+{% endif %}
+
+
+<section class="license-card">
+
+    <div>
+
+        <small>
+            LICENSE OWNER
+        </small>
+
+        <strong>
+            {{ license.name }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <small>
+            PLAN
+        </small>
+
+        <strong>
+            {{ license.plan }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <small>
+            EXPIRY
+        </small>
+
+        <strong>
+            {{ license.expires }}
+        </strong>
+
+    </div>
+
+</section>
+
+
+{% endif %}
+
+</main>
+
+
+<footer>
+
+    Stock Market Analysis Using Python in AI & ML
+
+</footer>
+
+</body>
+</html>

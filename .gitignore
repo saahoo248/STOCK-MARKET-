@@ -1,0 +1,8 @@
+﻿.venv/
+__pycache__/
+*.pyc
+
+config/license.json
+config/license_secret.txt
+
+outputs/charts/companies/
