@@ -4,5 +4,3 @@ __pycache__/
 
 config/license.json
 config/license_secret.txt
-
-outputs/charts/companies/
